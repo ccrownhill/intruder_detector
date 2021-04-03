@@ -7,14 +7,38 @@
 #include <opencv2/imgproc.hpp>
 #include <unistd.h>
 #include <string.h>
+#include <signal.h>
+#include <errno.h>
 
 using namespace std;
 using namespace cv;
 
+int catch_signal(int sig, void (*handler)(int))
+{
+	struct sigaction action;
+	action.sa_handler = handler;
+	sigemptyset(&action.sa_mask);
+	action.sa_flags = 0;
+	return sigaction(sig, &action, NULL);
+}
+
 const float MEAN_FLOW_THRESHOLD = 0.3;
+VideoCapture camera(0); // defined in global scope so that it can be closed by interrupt handler
+
+void interrupt_handler(int sig)
+{
+	camera.release();
+	destroyAllWindows();
+	cerr << "Bye" << endl;
+	exit(0);
+}
 
 int main(int argc, char *argv[])
 {
+	if (catch_signal(SIGINT, interrupt_handler) == -1) {
+		cerr << "Can't set interrupt handler: " << strerror(errno) << endl;
+		exit(1);
+	}
 	char output_image_file[100] = "intruder_image.jpg";
 	char opt;
 	while((opt = getopt(argc, argv, "o:h")) != -1) {
@@ -31,7 +55,6 @@ int main(int argc, char *argv[])
 		}
 	}
 
-	VideoCapture camera(0);
 	if (!camera.isOpened()) {
 		cerr << "ERROR: Could not open camera" << endl;
 		return 1;
@@ -61,5 +84,7 @@ int main(int argc, char *argv[])
 		if (waitKey(1) >= 0) // quit if a key is pressed
 			break;
 	}
+	camera.release();
+	destroyAllWindows();
 	return 0;
 }

@@ -19,7 +19,7 @@ $ make intruder_detector
 This will just execute this command:
 
 ```
-$ g++ -I/usr/include/opencv4 intruder_detector.cpp -o intruder_detector -lopencv_core -lopencv_highgui -lopencv_imgcodecs -lopencv_videoio -lopencv_video -lopencv_imgproc
+$ g++ intruder_detector.cpp -Wall -Os -I/usr/include/opencv4 -lopencv_core -lopencv_highgui -lopencv_imgcodecs -lopencv_videoio -lopencv_video -lopencv_imgproc -o intruder_detector
 ```
 
 ## Usage

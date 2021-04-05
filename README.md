@@ -43,3 +43,5 @@ To show the usage message use:
 ```
 $ ./intruder_detector -h
 ```
+
+To quit the program press any key while hovering over the video output window or just CTRL-C (in the terminal where the program is being executed).
